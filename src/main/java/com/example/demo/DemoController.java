@@ -23,9 +23,6 @@ public class DemoController {
     @Autowired
     private UrlService urlService;
 
-    @Autowired
-    private AmazonClientService s3ClientService;
-
     @GetMapping("/generate")
     public ResponseEntity<String> generateUrl(@RequestParam(value = "order", required=false)  String order) {
         String id = null;
@@ -57,58 +54,6 @@ public class DemoController {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
-    }
-
-    @PostMapping("/upload_file")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-        return s3ClientService.uploadFile(file);
-    }
-
-    @GetMapping("/view_pdf")
-    public void viewPdf(@RequestParam(value = "key", required=false)  String key, HttpServletResponse response) {
-        String keyName = key;
-        if (keyName == null) {
-            keyName = "pdf_1.pdf-1597573243502";
-        }
-        S3Object fileObject = s3ClientService.getFileObject(keyName);
-        S3ObjectInputStream is = fileObject.getObjectContent();
-        try {
-            int nRead;
-            while ((nRead = is.read()) != -1) {
-                response.getWriter().write(nRead);
-            }
-            fileObject.close();
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/dowload_file")
-    public ResponseEntity<byte[]> downloadFile(@RequestParam(value = "key", required=false)  String key) {
-        String keyName = key;
-        if (keyName == null) {
-            keyName = "pdf_1.pdf-1597573243502";
-        }
-        byte[] content = null;
-        S3Object fileObject = s3ClientService.getFileObject(keyName);
-        S3ObjectInputStream is = fileObject.getObjectContent();
-        try {
-            content = IOUtils.toByteArray(is);
-            fileObject.close();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception".getBytes());
-        }
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(content);
-    }
-
-    @GetMapping("/delete_file")
-    public ResponseEntity<String> deleteFile(@RequestParam(value = "key", required=false)  String key) {
-        String keyName = key;
-        if (keyName == null) {
-            keyName = "pdf_1.pdf-1597573243502";
-        }
-        s3ClientService.deleteFileOnS3(keyName);
-        return ResponseEntity.ok().body(keyName);
     }
 
     private String getPdfUrl(String id) {

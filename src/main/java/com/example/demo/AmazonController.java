@@ -1,0 +1,74 @@
+package com.example.demo;
+
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+
+@RestController
+public class AmazonController {
+    @Autowired
+    private AmazonClientService s3ClientService;
+
+    @PostMapping("/amazon/upload_file")
+    public String uploadFile(@RequestParam("file") MultipartFile file) {
+        return s3ClientService.uploadFile(file);
+    }
+
+    @GetMapping("/amazon/view_pdf")
+    public void viewPdf(@RequestParam(value = "key", required=false)  String key, HttpServletResponse response) {
+        String keyName = key;
+        if (keyName == null) {
+            keyName = "pdf_1.pdf-1597573243502";
+        }
+        S3Object fileObject = s3ClientService.getFileObject(keyName);
+        S3ObjectInputStream is = fileObject.getObjectContent();
+        try {
+            int nRead;
+            while ((nRead = is.read()) != -1) {
+                response.getWriter().write(nRead);
+            }
+            fileObject.close();
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/amazon/download_pdf")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam(value = "key", required=false)  String key) {
+        String keyName = key;
+        if (keyName == null) {
+            keyName = "pdf_1.pdf-1597573243502";
+        }
+        byte[] content = null;
+        S3Object fileObject = s3ClientService.getFileObject(keyName);
+        S3ObjectInputStream is = fileObject.getObjectContent();
+        try {
+            content = IOUtils.toByteArray(is);
+            fileObject.close();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception".getBytes());
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(content);
+    }
+
+    @GetMapping("/amazon/delete_file")
+    public ResponseEntity<String> deleteFile(@RequestParam(value = "key", required=false)  String key) {
+        String keyName = key;
+        if (keyName == null) {
+            keyName = "pdf_1.pdf-1597573243502";
+        }
+        s3ClientService.deleteFileOnS3(keyName);
+        return ResponseEntity.ok().body(keyName);
+    }
+}

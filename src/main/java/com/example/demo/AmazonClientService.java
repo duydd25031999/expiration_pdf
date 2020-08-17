@@ -6,6 +6,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -14,6 +15,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.AwsHostNameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +48,7 @@ public class AmazonClientService {
     public void initializeS3() {
         logger.info("Access Key: " + this.accessKey);
         logger.info("Secret Key: " + this.secretKey);
-        AWSCredentials credentials = new BasicAWSCredentials(
-            accessKey,
-            secretKey
-        );
-        this.s3Client = initS3Client(credentials);
+        this.s3Client = initS3Client();
     }
 
     public String uploadFile(MultipartFile multipartFile) {
@@ -87,13 +85,23 @@ public class AmazonClientService {
         return keyName;
     }
 
-    private AmazonS3 initS3Client(AWSCredentials credentials) {
-        AmazonS3 s3Client = new AmazonS3Client(credentials);
-//        AmazonS3 s3Client =  AmazonS3ClientBuilder
-//            .standard()
-//            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+    private AmazonS3 initS3Client() {
+        AWSCredentials credentials = new BasicAWSCredentials(
+            accessKey,
+            secretKey
+        );
+        //        AmazonS3 s3Client = new AmazonS3Client(credentials);
+        AmazonS3 s3Client =  AmazonS3ClientBuilder
+            .standard()
+            .withCredentials(new AWSStaticCredentialsProvider(credentials))
 //            .withRegion(Regions.AP_SOUTHEAST_1)
-//            .build();
+            .withEndpointConfiguration(
+                new AwsClientBuilder.EndpointConfiguration(
+                    endpointUrl,
+                    AwsHostNameUtils.parseRegion(endpointUrl, AmazonS3Client.S3_SERVICE_NAME)
+                )
+            ).withPathStyleAccessEnabled(true)
+            .build();
         return s3Client;
 
     }
