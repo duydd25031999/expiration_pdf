@@ -29,6 +29,7 @@ dependencies {
 	}
     //s3 amazon
     compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.842'
+    compile 'io.minio:minio:7.1.0'
 }
 
 test {

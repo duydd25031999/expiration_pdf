@@ -36,7 +36,7 @@ public class ViettelClientService {
     private String secretKey;
 
     private AmazonS3 s3Client;
-    private Logger logger = LoggerFactory.getLogger(AmazonClientService.class);
+    private Logger logger = LoggerFactory.getLogger(ViettelClientService.class);
 
     @PostConstruct
     public void initializeS3() {
