@@ -5,40 +5,34 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.AwsHostNameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Date;
 
 @Service
-public class AmazonClientService {
-    @Value("${amazonProperties.endpointUrl}")
+public class ViettelClientService {
+    @Value("${viettelProperties.endpointUrl}")
     private String endpointUrl;
-    @Value("${amazonProperties.bucketName}")
+    @Value("${viettelProperties.bucketName}")
     private String bucketName;
-    @Value("${amazonProperties.accessKey}")
+    @Value("${viettelProperties.accessKey}")
     private String accessKey;
-    @Value("${amazonProperties.secretKey}")
+    @Value("${viettelProperties.secretKey}")
     private String secretKey;
 
     private AmazonS3 s3Client;
@@ -46,7 +40,9 @@ public class AmazonClientService {
 
     @PostConstruct
     public void initializeS3() {
-        logger.info("Amazon S3");
+        logger.info("Viettel S3");
+        logger.info("Endpoint : " + this.endpointUrl);
+        logger.info("Bucket Name : " + this.bucketName);
         logger.info("Access Key: " + this.accessKey);
         logger.info("Secret Key: " + this.secretKey);
         this.s3Client = initS3Client();
@@ -57,6 +53,7 @@ public class AmazonClientService {
         try {
             File convertedFile = convertMultiPartToFile(multipartFile);
             fileName = generateFileName(multipartFile);
+            logger.info("File Name: " + fileName);
             uploadFileToS3bucket(fileName, convertedFile);
             convertedFile.delete();
         } catch (AmazonServiceException ase) {
@@ -66,10 +63,12 @@ public class AmazonClientService {
             logger.info("AWS Error Code:   " + ase.getErrorCode());
             logger.info("Error Type:       " + ase.getErrorType());
             logger.info("Request ID:       " + ase.getRequestId());
-        } catch (AmazonClientException ace) {
-            logger.info("Caught an AmazonClientException: ");
-            logger.info("Error Message: " + ace.getMessage());
-        } catch (IOException ioe) {
+        }
+//        catch (AmazonClientException ace) {
+//            logger.info("Caught an AmazonClientException: ");
+//            logger.info("Error Message: " + ace.getMessage());
+//        }
+        catch (IOException ioe) {
             logger.info("IOE Error Message: " + ioe.getMessage());
 
         }
@@ -99,7 +98,7 @@ public class AmazonClientService {
             .withEndpointConfiguration(
                 new AwsClientBuilder.EndpointConfiguration(
                     endpointUrl,
-                    AwsHostNameUtils.parseRegion(endpointUrl, AmazonS3Client.S3_SERVICE_NAME)
+                    Regions.US_EAST_1.getName()
                 )
             ).withPathStyleAccessEnabled(true)
             .build();
@@ -116,11 +115,14 @@ public class AmazonClientService {
     }
 
     private String generateFileName(MultipartFile multiPart) {
-        return multiPart.getOriginalFilename().replace(" ", "_") + "-" + new Date().getTime();
+        return new Date().getTime()  + "-" + multiPart.getOriginalFilename();
     }
 
     private void uploadFileToS3bucket(String fileName, File file) {
+
         PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, file);
+//        FileInputStream fis = new FileInputStream(file);
+//        PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, fis, new ObjectMetadata());
         s3Client.putObject(uploadRequest);
     }
 }
