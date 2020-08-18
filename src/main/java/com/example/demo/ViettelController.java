@@ -49,7 +49,7 @@ public class ViettelController {
 //        }
 //        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(content);
 //    }
-
+//
 //    @GetMapping("/viettel/delete_file")
 //    public ResponseEntity<String> deleteFile(@RequestParam(value = "key", required=false)  String key) {
 //        String keyName = key;

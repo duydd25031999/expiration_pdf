@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.amazonaws.SDKGlobalConfiguration;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;

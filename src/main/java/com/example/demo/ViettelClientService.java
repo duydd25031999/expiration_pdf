@@ -1,7 +1,6 @@
 package com.example.demo;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
+import com.amazonaws.*;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -64,10 +63,10 @@ public class ViettelClientService {
             logger.info("Error Type:       " + ase.getErrorType());
             logger.info("Request ID:       " + ase.getRequestId());
         }
-//        catch (AmazonClientException ace) {
-//            logger.info("Caught an AmazonClientException: ");
-//            logger.info("Error Message: " + ace.getMessage());
-//        }
+        catch (AmazonClientException ace) {
+            logger.info("Caught an AmazonClientException: ");
+            logger.info("Error Message: " + ace.getMessage());
+        }
         catch (IOException ioe) {
             logger.info("IOE Error Message: " + ioe.getMessage());
 
@@ -86,11 +85,14 @@ public class ViettelClientService {
     }
 
     private AmazonS3 initS3Client() {
+        System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, "true");
         AWSCredentials credentials = new BasicAWSCredentials(
             accessKey,
             secretKey
         );
-        //        AmazonS3 s3Client = new AmazonS3Client(credentials);
+//                AmazonS3 s3Client = new AmazonS3Client(credentials);
+//                s3Client.setEndpoint(endpointUrl);
+
         AmazonS3 s3Client =  AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
