@@ -21,11 +21,14 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class ViettelController {
-    @Autowired
-    private ViettelClientService s3ClientService;
+//    @Autowired
+//    private ViettelClientService s3ClientService;
 
 //    @Autowired
 //    private MinIOService s3ClientService;
+
+    @Autowired
+    private SampleService s3ClientService;
 
     @PostMapping("/viettel/upload_file")
     public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
