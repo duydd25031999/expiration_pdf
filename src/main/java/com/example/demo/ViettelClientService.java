@@ -9,6 +9,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 public class ViettelClientService {
@@ -53,7 +55,10 @@ public class ViettelClientService {
             File convertedFile = convertMultiPartToFile(multipartFile);
             fileName = generateFileName(multipartFile);
             logger.info("File Name: " + fileName);
-            uploadFileToS3bucket(fileName, convertedFile);
+            boolean isUpload = uploadFileToS3bucket(fileName, convertedFile);
+            if (!isUpload) {
+            	fileName = "Upload fail";
+            }
             convertedFile.delete();
         } catch (AmazonServiceException ase) {
             logger.info("Caught an AmazonServiceException from GET requests, rejected reasons:");
@@ -62,14 +67,23 @@ public class ViettelClientService {
             logger.info("AWS Error Code:   " + ase.getErrorCode());
             logger.info("Error Type:       " + ase.getErrorType());
             logger.info("Request ID:       " + ase.getRequestId());
+            logger.info("Http Reques");
+            Map<String, String> httpHeaders = ase.getHttpHeaders();
+            for (String key : httpHeaders.keySet()) {
+            	logger.info(key + " = " + httpHeaders.get(key));
+            }
+            logger.info("Response:       " + ase.getRawResponseContent());
+            
+            return "Request fail";
         }
         catch (AmazonClientException ace) {
             logger.info("Caught an AmazonClientException: ");
             logger.info("Error Message: " + ace.getMessage());
+            return "Request fail";
         }
         catch (IOException ioe) {
             logger.info("IOE Error Message: " + ioe.getMessage());
-
+            return "Request fail";
         }
         return fileName;
     }
@@ -92,7 +106,8 @@ public class ViettelClientService {
         );
 //                AmazonS3 s3Client = new AmazonS3Client(credentials);
 //                s3Client.setEndpoint(endpointUrl);
-
+        ClientConfiguration config = new ClientConfiguration();
+        config.setSignerOverride("S3SignerType");
         AmazonS3 s3Client =  AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
@@ -100,9 +115,11 @@ public class ViettelClientService {
             .withEndpointConfiguration(
                 new AwsClientBuilder.EndpointConfiguration(
                     endpointUrl,
-                    Regions.US_EAST_1.getName()
+                    null
                 )
-            ).withPathStyleAccessEnabled(true)
+            )
+            .enablePathStyleAccess()
+            .withClientConfiguration(config)
             .build();
         return s3Client;
 
@@ -120,11 +137,38 @@ public class ViettelClientService {
         return new Date().getTime()  + "-" + multiPart.getOriginalFilename();
     }
 
-    private void uploadFileToS3bucket(String fileName, File file) {
-
-        PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, file);
-//        FileInputStream fis = new FileInputStream(file);
-//        PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, fis, new ObjectMetadata());
-        s3Client.putObject(uploadRequest);
+    private boolean uploadFileToS3bucket(String fileName, File file) {
+    	try {
+    		 PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, file);
+    		 ObjectMetadata md = new ObjectMetadata();
+    		 md.setCacheControl("max-age=680400");
+    		 md.setContentType("application/x-www-form-urlencoded");
+    		 uploadRequest.setMetadata(md);
+//           FileInputStream fis = new FileInputStream(file);
+//           PutObjectRequest uploadRequest = new PutObjectRequest(bucketName, fileName, fis, new ObjectMetadata());
+           s3Client.putObject(uploadRequest);
+    	}
+    	catch (AmazonS3Exception ase) {
+    		logger.info("Caught an AmazonServiceException from GET requests, rejected reasons:");
+            logger.info("Error Message:    " + ase.getMessage());
+            logger.info("HTTP Status Code: " + ase.getStatusCode());
+            logger.info("AWS Error Code:   " + ase.getErrorCode());
+            logger.info("Error Type:       " + ase.getErrorType());
+            logger.info("Request ID:       " + ase.getRequestId());
+            logger.info("Http Reques");
+            Map<String, String> httpHeaders = ase.getHttpHeaders();
+            for (String key : httpHeaders.keySet()) {
+            	logger.info(key + " = " + httpHeaders.get(key));
+            }
+            logger.info("Response:       " + ase.getRawResponseContent());
+			return false;
+		}
+    	catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+       
+        return true;
     }
+   
 }

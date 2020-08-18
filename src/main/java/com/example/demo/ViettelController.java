@@ -21,37 +21,37 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class ViettelController {
-//    @Autowired
-//    private ViettelClientService s3ClientService;
+    @Autowired
+    private ViettelClientService s3ClientService;
 
 //    @Autowired
 //    private MinIOService s3ClientService;
 
-    @Autowired
-    private SampleService s3ClientService;
+//    @Autowired
+//    private SampleService s3ClientService;
 
     @PostMapping("/viettel/upload_file")
     public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
         return s3ClientService.uploadFile(file);
     }
 
-//    @GetMapping("/viettel/download_pdf")
-//    public ResponseEntity<byte[]> downloadFile(@RequestParam(value = "key", required=false)  String key) {
-//        String keyName = key;
-//        if (keyName == null) {
-//            keyName = "pdf_1.pdf-1597573243502";
-//        }
-//        byte[] content = null;
-//        S3Object fileObject = s3ClientService.getFileObject(keyName);
-//        S3ObjectInputStream is = fileObject.getObjectContent();
-//        try {
-//            content = IOUtils.toByteArray(is);
-//            fileObject.close();
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception".getBytes());
-//        }
-//        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(content);
-//    }
+    @GetMapping("/viettel/download_pdf")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam(value = "key", required=false)  String key) {
+        String keyName = key;
+        if (keyName == null) {
+            keyName = "pdf_1.pdf-1597573243502";
+        }
+        byte[] content = null;
+        S3Object fileObject = s3ClientService.getFileObject(keyName);
+        S3ObjectInputStream is = fileObject.getObjectContent();
+        try {
+            content = IOUtils.toByteArray(is);
+            fileObject.close();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception".getBytes());
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(content);
+    }
 //
 //    @GetMapping("/viettel/delete_file")
 //    public ResponseEntity<String> deleteFile(@RequestParam(value = "key", required=false)  String key) {

@@ -47,6 +47,11 @@ public class MinIOService {
     }
 
     private MinioClient initS3Client() {
+    	logger.info("Viettel S3");
+        logger.info("Endpoint : " + this.endpointUrl);
+        logger.info("Bucket Name : " + this.bucketName);
+        logger.info("Access Key: " + this.accessKey);
+        logger.info("Secret Key: " + this.secretKey);
         MinioClient s3Client = MinioClient.builder()
             .endpoint(endpointUrl)
             .credentials(accessKey, secretKey)
@@ -72,7 +77,6 @@ public class MinIOService {
                                 .bucket(bucketName)
                                 .object(fileName)
                                 .stream(fis, file.length(), -1)
-                                .contentType(MediaType.APPLICATION_PDF_VALUE)
                                 .build();
         s3Client.putObject(args);
     }
