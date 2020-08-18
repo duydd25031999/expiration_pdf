@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7f99bedc-a86a-40c1-973e-9b492cec1765" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/MinIOService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/MinIOService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ViettelClientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/ViettelClientService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/ViettelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/ViettelController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +42,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../mContract-web-api" />
+    <property name="settings.editor.selected.configurable" value="http.certificates" />
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
@@ -171,25 +169,33 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="740" y="280" key="FileChooserDialogImpl/0.0.1920.1050@0.0.1920.1050" timestamp="1597564131152" />
-    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1597716712819">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1597740469607">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1597716712819" />
-    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1597716712818">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1597740469607" />
+    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1597740469607">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1597716712818" />
-    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1597716712818">
+    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1597740469607" />
+    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1597740469607">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1597716712818" />
-    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1597716712819">
+    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1597740469607" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1597740469607">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1597716712819" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1597740469607" />
+    <state x="461" y="170" key="SettingsEditor" timestamp="1597740436781">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="461" y="170" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1597740436781" />
     <state x="616" y="243" width="672" height="677" key="run.anything.popup" timestamp="1597715305792">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="616" y="243" width="672" height="677" key="run.anything.popup/0.0.1920.1050@0.0.1920.1050" timestamp="1597715305792" />
+    <state x="623" y="227" width="672" height="678" key="search.everywhere.popup" timestamp="1597739860943">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="623" y="227" width="672" height="678" key="search.everywhere.popup/0.0.1920.1050@0.0.1920.1050" timestamp="1597739860943" />
   </component>
 </project>

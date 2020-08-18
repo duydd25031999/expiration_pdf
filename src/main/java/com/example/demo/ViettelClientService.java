@@ -85,7 +85,7 @@ public class ViettelClientService {
     }
 
     private AmazonS3 initS3Client() {
-        System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, "true");
+//        System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, "true");
         AWSCredentials credentials = new BasicAWSCredentials(
             accessKey,
             secretKey
