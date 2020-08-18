@@ -1,9 +1,17 @@
 package com.example.demo;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +37,7 @@ public class SampleService {
     private String secretKey;
 
     private Logger logger = LoggerFactory.getLogger(SampleService.class);
-    AmazonS3Client s3Client;
+    AmazonS3 s3Client;
 
     @PostConstruct
     public void initializeS3() {
@@ -41,14 +49,26 @@ public class SampleService {
         this.s3Client = initS3Client();
     }
 
-    private AmazonS3Client initS3Client() {
-        System.getProperty("javax.net.ssl.trustStore", "true");
-        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(accessKey, secretKey));
-        S3ClientOptions options = new S3ClientOptions();
-        options.setPathStyleAccess(true);
-        s3Client.setEndpoint(endpointUrl);
-        s3Client.setS3ClientOptions(options);
-        return  s3Client;
+    private AmazonS3 initS3Client() {
+        AWSCredentials credentials = new BasicAWSCredentials(
+                accessKey,
+                secretKey
+            );
+            ClientConfiguration config = new ClientConfiguration();
+            config.setSignerOverride("S3SignerType");
+            AmazonS3 s3Client =  AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withEndpointConfiguration(
+                    new AwsClientBuilder.EndpointConfiguration(
+                        endpointUrl,
+                        null
+                    )
+                )
+                .enablePathStyleAccess()
+                .withClientConfiguration(config)
+                .build();
+            return s3Client;
     }
 
     public String uploadFile(MultipartFile multipartFile) {
@@ -56,13 +76,13 @@ public class SampleService {
         try {
             convertedFile = convertMultiPartToFile(multipartFile);
         } catch (IOException e) {
-            return "Request fail";
+            return "Converted fail";
         }
         String fileName = generateFileName(multipartFile);
         boolean isUpload = uploadUsingS3Upload(convertedFile, fileName);
         convertedFile.delete();
         if (!isUpload) {
-            return "Request fail";
+            return "Upload fail";
         }
         return fileName;
     }
@@ -139,5 +159,19 @@ public class SampleService {
 
     private String generateFileName(MultipartFile multiPart) {
         return new Date().getTime()  + "-" + multiPart.getOriginalFilename();
+    }
+    
+    public byte[] getFileObject(String keyName) throws IOException {
+    	byte[] content = null;
+        S3Object s3Object = s3Client.getObject(bucketName, keyName);
+        S3ObjectInputStream is = s3Object.getObjectContent();
+        content = IOUtils.toByteArray(is);
+        s3Object.close();
+        return content;
+    }
+
+    public String deleteFileOnS3(String keyName) {
+        s3Client.deleteObject(bucketName, keyName);
+        return keyName;
     }
 }
